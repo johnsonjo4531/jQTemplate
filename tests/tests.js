@@ -16,10 +16,13 @@
   var _templateObject = _taggedTemplateLiteral(["\n    <div>\n      <h1>Greetings</h1>", "\n    </div>\n  "], ["\n    <div>\n      <h1>Greetings</h1>", "\n    </div>\n  "]),
       _templateObject2 = _taggedTemplateLiteral(["<h1>Greetings</h1>", ""], ["<h1>Greetings</h1>", ""]),
       _templateObject3 = _taggedTemplateLiteral(["\n    <div>\n      ", "\n    </div>\n  "], ["\n    <div>\n      ", "\n    </div>\n  "]),
-      _templateObject4 = _taggedTemplateLiteral(["\n    <div>\n      ...\n      <div class=\"js-insertUserText\">", "</div>\n      ...\n    </div>\n  "], ["\n    <div>\n      ...\n      <div class=\"js-insertUserText\">", "</div>\n      ...\n    </div>\n  "]),
-      _templateObject5 = _taggedTemplateLiteral(["\n    <div>\n      ...\n      ", "\n      ...\n    </div>\n  "], ["\n    <div>\n      ...\n      ", "\n      ...\n    </div>\n  "]),
-      _templateObject6 = _taggedTemplateLiteral(["\n    <div data-name=\"", "\"></div>\n  "], ["\n    <div data-name=\"", "\"></div>\n  "]),
-      _templateObject7 = _taggedTemplateLiteral(["<div data-name=\"", "\"></div>"], ["<div data-name=\"", "\"></div>"]);
+      _templateObject4 = _taggedTemplateLiteral(["\n    <div>\n      ", "", "\n    </div>\n  "], ["\n    <div>\n      ", "", "\n    </div>\n  "]),
+      _templateObject5 = _taggedTemplateLiteral(["\n    <div>\n      ...\n      <div class=\"js-insertUserText\">", "</div>\n      ...\n    </div>\n  "], ["\n    <div>\n      ...\n      <div class=\"js-insertUserText\">", "</div>\n      ...\n    </div>\n  "]),
+      _templateObject6 = _taggedTemplateLiteral(["\n    <div>\n      ...\n      ", "\n      ...\n    </div>\n  "], ["\n    <div>\n      ...\n      ", "\n      ...\n    </div>\n  "]),
+      _templateObject7 = _taggedTemplateLiteral(["\n    <ul>\n      ", "\n    </ul>\n  "], ["\n    <ul>\n      ", "\n    </ul>\n  "]),
+      _templateObject8 = _taggedTemplateLiteral(["<li class=\"li-", "\">", "</li>"], ["<li class=\"li-", "\">", "</li>"]),
+      _templateObject9 = _taggedTemplateLiteral(["\n    <div data-name=\"", "\"></div>\n  "], ["\n    <div data-name=\"", "\"></div>\n  "]),
+      _templateObject10 = _taggedTemplateLiteral(["<div data-name=\"", "\"></div>"], ["<div data-name=\"", "\"></div>"]);
 
   function _taggedTemplateLiteral(strings, raw) {
     return Object.freeze(Object.defineProperties(strings, {
@@ -36,6 +39,7 @@
     // Properly adds jQuery elements.
 
     template = _jQTemplate.template;
+    var htmlNode = _jQTemplate.htmlNode;
 
 
     var $message = $("<div>Hello World</div>");
@@ -57,6 +61,10 @@
     console.log($result.html());
     assert.ok($result.html() == $sameResult.html() && $result.html() == $equivalentResult.html(), "Properly adds jQuery elements.");
 
+    $equivalentResult = template(_templateObject4, $("<h1>Greetings</h1>"), $("<div>Hello World</div>"));
+
+    assert.ok($result.html() == $equivalentResult.html(), "Properly adds multiple placeholders and jQuery elements.");
+
     // Properly adds text nodes.
 
     var userText = "something dangerous!!!";
@@ -68,7 +76,7 @@
     var textNode = document.createTextNode(userText);
     $result.find(".js-insertUserText").append(textNode);
 
-    $sameResult = template(_templateObject4, jQTemplate.textNode(userText));
+    $sameResult = template(_templateObject5, jQTemplate.textNode(userText));
 
     assert.ok($result.html() == $sameResult.html(), "Properly adds text nodes.");
 
@@ -79,9 +87,36 @@
     // create new element
     $result = $("\n    <div>\n      ...\n      <div></div>\n      ...\n    </div>\n  ");
 
-    $sameResult = jQTemplate.template(_templateObject5, document.createElement("div"));
+    $sameResult = jQTemplate.template(_templateObject6, document.createElement("div"));
 
     assert.ok($result.html() == $sameResult.html(), "Basic DOM node works properly.");
+
+    var userTexts = ["hello", "world", "something interesting"];
+
+    $result = $("\n    <ul>\n      <li class=\"li-0\"></li><li class=\"li-1\"></li><li class=\"li-2\"></li>\n    </ul>\n  ");
+
+    userTexts.forEach(function (el, i) {
+      $result.find(".li-" + i).append(document.createTextNode(el));
+    });
+
+    $sameResult = template(_templateObject7, userTexts.map(function (el, i) {
+      return template(_templateObject8, i, document.createTextNode(el));
+    }));
+    assert.ok($result.html() == $sameResult.html(), "Array of jQuery nodes works properly.");
+
+    $equivalentResult = template(_templateObject7, userTexts.map(function (el, i) {
+      return htmlNode('li', el, { class: "li-" + i });
+    }));
+    assert.ok($result.html() == $equivalentResult.html(), "Array of DOM nodes works properly.");
+
+    $equivalentResult = template(_templateObject7, userTexts.map(function (el, i) {
+      if (i % 2 === 0) {
+        return template(_templateObject8, i, document.createTextNode(el));
+      } else {
+        return htmlNode('li', el, { class: "li-" + i });
+      }
+    }));
+    assert.ok($result.html() == $equivalentResult.html(), "Polymorphic array of DOM nodes and jQuery objects works properly.");
   });
 
   QUnit.test("textNode works as expected", function (assert) {
@@ -92,6 +127,10 @@
     assert.ok('<h1></h1>' == jQTemplate.htmlNode("h1").outerHTML, "basic h1 works properly.");
     assert.ok('<h1 class="true">world</h1>' == jQTemplate.htmlNode("h1", "world", { class: "true" }).outerHTML, "basic h1 with text and attributes.");
     assert.ok('<h1 data-action="true"></h1>' == jQTemplate.htmlNode("h1", { "data-action": "true" }).outerHTML, "basic h1 with data-attributes no text w/ skipping of second param.");
+    assert.ok('<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", { style: "padding: 10px; margin: 10px; line-height: 1em;" }).outerHTML, "basic h1 with style attribute string.");
+    assert.ok('<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", { style: { padding: "10px", margin: "10px", lineHeight: "1em" } }).outerHTML, "basic h1 with style attributes object.");
+    assert.ok('<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", { style: { padding: "10px", margin: "10px", "line-height": "1em" } }).outerHTML, "basic h1 with style attributes object no camel case.");
+
     var callback = sinon.spy();
 
     var node = jQTemplate.htmlNode("h1", { onclick: callback });
@@ -163,13 +202,13 @@
     var userText = '"><script>window.callback(); // malicous code could be here</script><div class="';
     window.callback = sinon.spy();
 
-    template(_templateObject6, userText).appendTo("body");
+    template(_templateObject9, userText).appendTo("body");
 
     assert.ok(window.callback.called, "user script is called when escape is not called");
 
     window.callback = sinon.spy();
 
-    template(_templateObject7, simpleEscape(userText)).appendTo("body");
+    template(_templateObject10, simpleEscape(userText)).appendTo("body");
 
     assert.ok(!window.callback.called, "escaped user script isn't ran");
   });

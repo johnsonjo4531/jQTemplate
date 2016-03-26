@@ -2,7 +2,7 @@
 QUnit.test( "template works as expected as shown in doc examples", function( assert ) {
   // Properly adds jQuery elements.
 
-  var {template} = jQTemplate;
+  var {template, htmlNode} = jQTemplate;
 
   var $message = $("<div>Hello World</div>");
 
@@ -34,6 +34,14 @@ QUnit.test( "template works as expected as shown in doc examples", function( ass
   console.log($equivalentResult.html());
   console.log($result.html());
   assert.ok($result.html() == $sameResult.html() && $result.html() == $equivalentResult.html(), "Properly adds jQuery elements." );
+
+  $equivalentResult = template`
+    <div>
+      ${$("<h1>Greetings</h1>")}${$("<div>Hello World</div>")}
+    </div>
+  `;
+
+  assert.ok($result.html() == $equivalentResult.html(), "Properly adds multiple placeholders and jQuery elements." );
 
   // Properly adds text nodes.
 
@@ -84,6 +92,49 @@ QUnit.test( "template works as expected as shown in doc examples", function( ass
   `;
 
   assert.ok( $result.html() == $sameResult.html(), "Basic DOM node works properly." );
+
+  var userTexts = ["hello", "world", "something interesting"];
+
+  $result = $(`
+    <ul>
+      <li class="li-0"></li><li class="li-1"></li><li class="li-2"></li>
+    </ul>
+  `);
+
+  userTexts.forEach(function (el, i) {
+    $result.find(`.li-${i}`).append(document.createTextNode(el));
+  })
+
+  $sameResult = template`
+    <ul>
+      ${userTexts.map(function (el, i) {
+        return template`<li class="li-${i}">${document.createTextNode(el)}</li>`;
+      })}
+    </ul>
+  `;
+  assert.ok( $result.html() == $sameResult.html(), "Array of jQuery nodes works properly." );
+
+  $equivalentResult = template`
+    <ul>
+      ${userTexts.map(function (el, i) {
+        return htmlNode('li', el, {class: `li-${i}`});
+      })}
+    </ul>
+  `;
+  assert.ok( $result.html() == $equivalentResult.html(), "Array of DOM nodes works properly." );
+
+  $equivalentResult = template`
+    <ul>
+      ${userTexts.map(function (el, i) {
+        if(i % 2 === 0) {
+          return template`<li class="li-${i}">${document.createTextNode(el)}</li>`;
+        } else {
+          return htmlNode('li', el, {class: `li-${i}`});
+        }
+      })}
+    </ul>
+  `;
+  assert.ok( $result.html() == $equivalentResult.html(), "Polymorphic array of DOM nodes and jQuery objects works properly." );
 });
 
 QUnit.test( "textNode works as expected", function( assert ) {
@@ -95,6 +146,10 @@ QUnit.test( "htmlNode works as expected", function( assert ) {
   assert.ok( '<h1></h1>' == jQTemplate.htmlNode("h1").outerHTML, "basic h1 works properly." );
   assert.ok( '<h1 class="true">world</h1>' == jQTemplate.htmlNode("h1", "world", {class: "true" }).outerHTML, "basic h1 with text and attributes." );
   assert.ok( '<h1 data-action="true"></h1>' == jQTemplate.htmlNode("h1", {"data-action": "true" }).outerHTML, "basic h1 with data-attributes no text w/ skipping of second param." );
+  assert.ok( '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: "padding: 10px; margin: 10px; line-height: 1em;" }).outerHTML, "basic h1 with style attribute string." );
+  assert.ok( '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: {padding: "10px", margin: "10px", lineHeight: "1em"} }).outerHTML, "basic h1 with style attributes object." );
+  assert.ok( '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: {padding: "10px", margin: "10px", "line-height": "1em"} }).outerHTML, "basic h1 with style attributes object no camel case." );
+
   var callback = sinon.spy();
 
   var node = jQTemplate.htmlNode("h1", {onclick: callback});

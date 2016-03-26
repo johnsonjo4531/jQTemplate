@@ -7,7 +7,7 @@ jQuery templating micro-library that handles nesting of DOM nodes and jQuery obj
 
 How it works.
 ---
-Takes a template string and converts it to a jQuery object. It is mostly a wrapper around feeding your string into the jQuery constructor and creating your elements. With the exception that all placeholder values of the template string which are DOM nodes or jQuery objects will get a temporary placeholder with unique id before being fed into the jQuery constructor. After the DOM tree has been built all the unique id'ed elements will be replaced with their corresponding DOM node or jQuery element.
+Takes a template string and converts it to a jQuery object. It is mostly a wrapper around feeding your string into the jQuery constructor and creating your elements. With the exception that all placeholder values of the template string which are DOM nodes, jQuery objects, or an array composed of DOM nodes and jQuery objects will get a temporary placeholder with unique id before being fed into the jQuery constructor. After the DOM tree has been built all the unique id'ed elements will be replaced with their corresponding DOM node or jQuery element.
 
 Quick example:
 
@@ -19,7 +19,7 @@ Quick example:
       </div>
     `;
 
-`$result` is a jQuery object with HTML content. It is equivalent to:
+$result is a jQuery object with HTML content equivalent to:
 
     var $sameResult = $(`
       <div>
@@ -68,7 +68,7 @@ With jQTemplate you can just do this:
 What you should know about this library before you use it.
 --
 
-The main function `jQTemplate.template` is meant to be used as a ES6 [template tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals). There are a series of functions in the library that should be used in conjunction with the template function as any string values produced in template literal placeholders will be added as html through jQuery. Since this is unwanted for user input it is suggested that you turn your user input into text nodes when possible using either `document.createTextNode("text string")`, `jQTemplate.textNode("text string")` which is just an alias to the previous, or `jQTemplate.htmlNode("span","text string")` which wraps your given element in argument 1 around the text node it creates using the text from argument 2. Text Nodes cannot be used within the opening or closing tag of an element for this reason if you want to use something within the opening or closing you can merely escape it with `jQTemplate.simpleEscape`. For more advanced parsing and escaping I would try adding your own DOM white-listing libraries.
+The main function `jQTemplate.template` is meant to be used as a ES6 [template tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals). There are a series of functions in the library that should be used in conjunction with the template function as any string values produced in template literal placeholders will be added as html through jQuery. Since this is unwanted for user input it is suggested that you turn your user input into text nodes when possible using either `document.createTextNode("text string")`, `jQTemplate.textNode("text string")` which is just an alias to the previous, or `jQTemplate.htmlNode("span","text string")` which wraps your given element in argument 1 around the text node it creates using the text from argument 2. Text Nodes cannot be used within the opening or closing tag of an element for this reason if you want to use something within the opening or closing you can merely escape it. For more advanced escaping I would try adding your own DOM white-listing libraries.
 
 How do I use it?
 --
@@ -114,10 +114,23 @@ since templates return jQuery objects they can also be nested in each other. The
       </div>
     `;
 
+Another useful example is using an array composed of either or both DOM nodes and jQuery objects in the template strings placeholder.
+
+    var {template, htmlNode} = jQTemplate;
+    var userTexts = ["hello", "world", "something interesting"];
+
+    template`
+      <ul>
+        ${userTexts.map(function (el, i) {
+          return htmlNode('li', el, {class: `li-${i}`});
+        })}
+      </ul>
+    `.appendTo("body");
+
 #### `textNode(tagName, text = "") `
 ##### type signature `textNode(string)`
 
-Just a wrapper around `document.createTextNode()`
+Just a wrapper around `document.createTextNode()`.
 
 
 
@@ -130,6 +143,11 @@ The following are example true expressions:
     '<h1></h1>' == jQTemplate.htmlNode("h1").outerHTML;
     '<h1 class="true">world</h1>' == jQTemplate.htmlNode("h1", "world", {class: "true" }).outerHTML;
     '<h1 data-action="true"></h1>' == jQTemplate.htmlNode("h1", {"data-action": "true" }).outerHTML;
+    '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: "padding: 10px; margin: 10px; line-height: 1em;" }).outerHTML
+    '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: {padding: "10px", margin: "10px", lineHeight: "1em"} }).outerHTML
+    '<h1 style="padding: 10px; margin: 10px; line-height: 1em;"></h1>' == jQTemplate.htmlNode("h1", {style: {padding: "10px", margin: "10px", "line-height": "1em"} }).outerHTML
+
+Note how the style property can be either a style string or an object with camelCase letters or strings of the proper css style property. The camelCase properties will be converted to kabob-case internally.
 
  The use of a property starting with "on" e.g. "onclick" will use jQuery's `on` method internally. The following code example shows an element when clicked will console.log "clicked".
 
@@ -156,6 +174,8 @@ Good for use in escaping values for HTML DOM attributes. As an example of what y
 
     template`<div data-name="${userText}"></div>`.appendTo("body");
 
+And what you should do instead:
+
     var {template, simpleEscape} = jQTemplate;
     var userText = '"><script>alert("malicious code could be here.")</script>';
 
@@ -163,13 +183,12 @@ Good for use in escaping values for HTML DOM attributes. As an example of what y
 
 
 
-Contributing
---
-Pull requests and issues welcome.
+ Contributing
+ --
+ Pull requests and issues welcome.
 
-
-Licensing
---
+ Licensing
+ --
 
 The MIT License (MIT)  
 Copyright (c) 2016 John Johnson

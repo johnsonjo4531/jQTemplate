@@ -42,11 +42,11 @@ var template = function template (strings, ...values) {
 
     var value = values[i];
     var allNodes = Array.isArray(value) && value.every(el=>el instanceof Node || el instanceof jQuery)
-    if(value) {
+    if(value || value === 0) {
       if(value instanceof Node || value instanceof jQuery || allNodes) {
         elIndexes.push(i);
         html += tempFiller(i);
-      } else if(value) {
+      } else {
         html += value;// || '';
       }
     }
@@ -113,7 +113,7 @@ var htmlNode = function htmlNode (tagName, text = "", attributes = {}) {
       delete attributes.style;
       var styleString = Object.keys(style).map(function (key) {
         return `${fromCamelToKabobCase(key)}: ${style[key]};`;
-      });
+      }).join(" ");
       elNode.setAttribute("style", styleString);
     }
     var [events, attributes] = partition(Object.entries(attributes), function ([key, val]) {

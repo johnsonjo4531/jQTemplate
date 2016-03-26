@@ -1,6 +1,6 @@
 {
   "name": "jqtemplate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "jQuery templating micro-library that handles nesting of DOM nodes and jQuery objects using ES6 template strings/literals.",
   "main": "lib/jQTemplate.js",
   "scripts": {
