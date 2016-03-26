@@ -19,7 +19,7 @@ Quick example:
       </div>
     `;
 
-$result is a jQuery object with HTML content equivalent to:
+`$result` is a jQuery object with HTML content. It is equivalent to:
 
     var $sameResult = $(`
       <div>
@@ -30,7 +30,7 @@ $result is a jQuery object with HTML content equivalent to:
 Why jQTemplate?
 --
 
-I found myself using the same pattern to input text nodes into html I created using jQuery and I eventually thought of something I feel is easier to handle. I also wanted something that I could just plug-in to my existing jQuery problems without having to re-write anything.
+I found myself using the same pattern to input text nodes into html I created using jQuery and I eventually thought of something I feel is easier to handle. I also wanted something that I could just plug-in to my existing jQuery projects without having to re-write anything.
 
 I commonly did something similar to this:
 
@@ -68,7 +68,7 @@ With jQTemplate you can just do this:
 What you should know about this library before you use it.
 --
 
-The main function `jQTemplate.template` is meant to be used as a ES6 [template tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals). There are a series of functions in the library that should be used in conjunction with the template function as any string values produced in template literal placeholders will be added as html through jQuery. Since this is unwanted for user input it is suggested that you turn your user input into text nodes when possible using either `document.createTextNode("text string")`, `jQTemplate.textNode("text string")` which is just an alias to the previous, or `jQTemplate.htmlNode("span","text string")` which wraps your given element in argument 1 around the text node it creates using the text from argument 2. Text Nodes cannot be used within the opening or closing tag of an element for this reason if you want to use something within the opening or closing you can merely escape it. For more advanced escaping I would try adding your own DOM white-listing libraries.
+The main function `jQTemplate.template` is meant to be used as a ES6 [template tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals). There are a series of functions in the library that should be used in conjunction with the template function as any string values produced in template literal placeholders will be added as html through jQuery. Since this is unwanted for user input it is suggested that you turn your user input into text nodes when possible using either `document.createTextNode("text string")`, `jQTemplate.textNode("text string")` which is just an alias to the previous, or `jQTemplate.htmlNode("span","text string")` which wraps your given element in argument 1 around the text node it creates using the text from argument 2. Text Nodes cannot be used within the opening or closing tag of an element for this reason if you want to use something within the opening or closing you can merely escape it with `jQTemplate.simpleEscape`. For more advanced parsing and escaping I would try adding your own DOM white-listing libraries.
 
 How do I use it?
 --
@@ -163,12 +163,13 @@ Good for use in escaping values for HTML DOM attributes. As an example of what y
 
 
 
- Contributing
- --
- Pull requests and issues welcome.
+Contributing
+--
+Pull requests and issues welcome.
 
- Licensing
- --
+
+Licensing
+--
 
 The MIT License (MIT)  
 Copyright (c) 2016 John Johnson
