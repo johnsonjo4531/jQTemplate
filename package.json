@@ -4,7 +4,7 @@
   "description": "jQuery templating micro-library that handles nesting of DOM nodes and jQuery objects using ES6 template strings/literals.",
   "main": "lib/jQTemplate.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-plumber": "^1.1.0",
     "gulp-print": "^2.0.1",
+    "gulp-qunit": "^1.3.1",
     "gulp-rename": "^1.2.2",
     "gulp-watch": "^4.3.5"
   }

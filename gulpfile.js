@@ -4,7 +4,8 @@ var gulp = require('gulp'),
     gprint = require('gulp-print'),
     //notify = require('gulp-notify'),
     babel = require('gulp-babel'),
-    gWatch = require('gulp-watch');
+    gWatch = require('gulp-watch'),
+    qunit = require('gulp-qunit');
 
 gulp.task('default', ["watchSrc", "watchTest"]);
 
@@ -44,4 +45,11 @@ gulp.task('watchTest', function() {
               .pipe(gprint(function(filePath){ return "File processed: " + filePath; }));
       }
   });
+});
+
+gulp.task('test', ['jQTemplate']);
+
+gulp.task('jQTemplate', function() {
+    return gulp.src('./tests/tests.html')
+        .pipe(qunit());
 });
