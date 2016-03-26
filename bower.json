@@ -1,0 +1,37 @@
+{
+  "name": "jQTemplate",
+  "version": "1.0.0",
+  "homepage": "https://github.com/johnsonjo4531/jQTemplate",
+  "authors": [
+    "John Johnson II <johnsonjo4531@gmail.com>"
+  ],
+  "description": "jQuery templating micro-library that handles nesting of DOM nodes and jQuery objects using ES6 template strings/literals.",
+  "main": "lib/jQTemplate.js",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "jQuery",
+    "templating",
+    "es6"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "assets/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": "~2.2.2"
+  },
+  "devDependencies": {
+    "qunit": "~1.22.0",
+    "sinon": "~1.17.3"
+  }
+}
