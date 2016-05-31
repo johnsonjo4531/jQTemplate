@@ -1,5 +1,9 @@
 # jQTemplate
 
+Notice
+----
+This is like alpha level software right now there are some things I need to get done mainly I want the performance to be around that of jQuery's .html() (right now it's at 2x from the benchmarks I ran).
+
 What is it?
 --
 
