@@ -2,7 +2,7 @@
 
 Notice
 ----
-This is like alpha level software right now there are some things I need to get done mainly I want the performance to be around that of jQuery's .html() (right now it's at 2x from the benchmarks I ran).
+This ended up turning into another library called [contours](https://github.com/johnsonjo4531/contours) which still uses jQuery but has optional support for it rather than required support. Contours also has improved performance over jQTemplate.
 
 What is it?
 --
